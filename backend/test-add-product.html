@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Add Product</title>
+</head>
+<body>
+  <h2>Add Product Test Form</h2>
+  <form id="addProductForm" action="http://localhost:4000/api/products/add" method="POST" enctype="multipart/form-data">
+    <label>Name: <input type="text" name="name" required></label><br><br>
+    <label>Description: <input type="text" name="description" required></label><br><br>
+    <label>Price: <input type="number" name="price" step="0.01" required></label><br><br>
+    <label>Category: <input type="text" name="category" required></label><br><br>
+    <label>Sizes (JSON array, e.g. [\"S\",\"M\",\"L\"]): <input type="text" name="sizes" value='["S","M","L"]' required></label><br><br>
+    <label>Bestseller: 
+      <select name="bestseller">
+        <option value="true">True</option>
+        <option value="false">False</option>
+      </select>
+    </label><br><br>
+    <label>Image 1: <input type="file" name="image1" accept="image/*" required></label><br><br>
+    <label>Image 2: <input type="file" name="image2" accept="image/*" required></label><br><br>
+    <label>Image 3: <input type="file" name="image3" accept="image/*" required></label><br><br>
+    <label>Image 4: <input type="file" name="image4" accept="image/*" required></label><br><br>
+    <button type="submit">Add Product</button>
+  </form>
+  <div id="result"></div>
+  <script>
+    document.getElementById('addProductForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const resultDiv = document.getElementById('result');
+      resultDiv.textContent = 'Submitting...';
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        resultDiv.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultDiv.textContent = 'Error: ' + err.message;
+      }
+    };
+  </script>
+</body>
+</html> 
