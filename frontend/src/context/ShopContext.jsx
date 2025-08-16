@@ -1,6 +1,6 @@
-import { createContext, useState } from "react";
-import { products } from "../assets/assets";
+import { createContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 export const ShopContext = createContext();
 
@@ -9,6 +9,39 @@ const ShopContextProvider = (props) => {
     const delivery_fee = 0;
     const [cartItems, setCartItems] = useState({});
     const [showCartPopup, setShowCartPopup] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Backend URL
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+
+    // Fetch products from database
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`${BACKEND_URL}/api/products/list`);
+            
+            if (response.data.success) {
+                setProducts(response.data.products);
+                setError(null);
+            } else {
+                setError('Failed to fetch products');
+                toast.error('Failed to load products');
+            }
+        } catch (err) {
+            console.error('Error fetching products:', err);
+            setError(err.response?.data?.message || 'Failed to connect to server');
+            toast.error('Failed to load products. Please check your connection.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch products when component mounts
+    useEffect(() => {
+        fetchProducts();
+    }, []);
 
     const addToCart = (itemId, size) => {
 
@@ -86,6 +119,10 @@ const ShopContextProvider = (props) => {
         return count;
     };
 
+    const clearCart = () => {
+        setCartItems({});
+    };
+
     // Log cart items whenever they change
     console.log('Current cart items:', cartItems);
 
@@ -98,8 +135,12 @@ const ShopContextProvider = (props) => {
         removeFromCart,
         getCartTotal,
         getCartItemCount,
+        clearCart,
         showCartPopup,
-        setShowCartPopup
+        setShowCartPopup,
+        loading,
+        error,
+        fetchProducts
     };
 
     return (

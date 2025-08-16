@@ -5,17 +5,48 @@ import Title from "./Title";
 import QuickAddModal from "./QuickAddModal";
 
 const LatestCollection = () => {
-    const { products, currency } = useContext(ShopContext);
+    const { products, currency, loading } = useContext(ShopContext);
     const [showQuickAdd, setShowQuickAdd] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
-    // Get the latest 4 products
-    const latestProducts = products.slice(-4);
+    // Get the latest products by sorting by date and taking the most recent 8
+    const latestProducts = products
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 8);
 
     const handleQuickAdd = (product) => {
         setSelectedProduct(product);
         setShowQuickAdd(true);
     };
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="container mx-auto px-4 py-16">
+                <div className="text-center mb-8">
+                    <Title text1="LATEST" text2="COLLECTION" />
+                </div>
+                <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-950"></div>
+                    <span className="ml-3 text-green-950">Loading latest products...</span>
+                </div>
+            </div>
+        );
+    }
+
+    // No products state
+    if (latestProducts.length === 0) {
+        return (
+            <div className="container mx-auto px-4 py-16">
+                <div className="text-center mb-8">
+                    <Title text1="LATEST" text2="COLLECTION" />
+                </div>
+                <div className="text-center py-12">
+                    <p className="text-gray-600">No products available at the moment.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto px-4 py-16">

@@ -5,17 +5,46 @@ import Title from "./Title";
 import QuickAddModal from "./QuickAddModal";
 
 const BestSeller = () => {
-    const { products, currency } = useContext(ShopContext);
+    const { products, currency, loading } = useContext(ShopContext);
     const [showQuickAdd, setShowQuickAdd] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
-    // Get the first 4 products as best sellers (you can modify this logic based on your needs)
-    const bestSellers = products.slice(0, 4);
+    // Filter products to show only those marked as bestsellers
+    const bestSellers = products.filter(product => product.bestseller === true);
 
     const handleQuickAdd = (product) => {
         setSelectedProduct(product);
         setShowQuickAdd(true);
     };
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="container mx-auto px-4 py-16">
+                <div className="text-center mb-8">
+                    <Title text1="BEST" text2="SELLERS" />
+                </div>
+                <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-950"></div>
+                    <span className="ml-3 text-green-950">Loading bestsellers...</span>
+                </div>
+            </div>
+        );
+    }
+
+    // No bestsellers state
+    if (bestSellers.length === 0) {
+        return (
+            <div className="container mx-auto px-4 py-16">
+                <div className="text-center mb-8">
+                    <Title text1="BEST" text2="SELLERS" />
+                </div>
+                <div className="text-center py-12">
+                    <p className="text-gray-600">No bestseller products available at the moment.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto px-4 py-16">

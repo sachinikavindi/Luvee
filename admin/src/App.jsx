@@ -63,7 +63,7 @@ function App() {
   }
 
   if (isLoading) {
-    return (
+  return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
@@ -86,20 +86,7 @@ function App() {
           <Routes>
             <Route path="/" element={
               <ProtectedRoute>
-                <div className="space-y-6">
-                  <div className="text-center py-10">
-                    <h1 className="text-2xl font-bold text-gray-800">Welcome to Dashboard</h1>
-                    <p className="text-gray-600 mt-2">You are now authenticated and can access all features.</p>
-                    <div className="mt-4 p-4 bg-blue-50 rounded-lg inline-block">
-                      <p className="text-sm text-blue-800">
-                        <strong>Backend URL:</strong> {BACKEND_URL}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Temporary Backend Test Component */}
-                  <BackendTest />
-                </div>
+                <List />
               </ProtectedRoute>
             } />
             <Route path="/add" element={
@@ -107,11 +94,7 @@ function App() {
                 <Add />
               </ProtectedRoute>
             } />
-            <Route path="/list" element={
-              <ProtectedRoute>
-                <List />
-              </ProtectedRoute>
-            } />
+            
             <Route path="/orders" element={
               <ProtectedRoute>
                 <Orders />

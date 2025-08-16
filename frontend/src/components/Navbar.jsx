@@ -25,8 +25,8 @@ const Navbar = () => {
             <ul class="text-[#1A4C39] md:flex hidden items-center space-x-20">
                 <NavLink to='/' className="hover:text-[#FFBF00] transition">Home</NavLink>
                 <NavLink to='/Collection' className="hover:text-[#FFBF00] transition">Collection</NavLink>
-                <NavLink to='/About' className="hover:text-[#FFBF00] transition">About</NavLink>
-                <NavLink to='/Contact' className="hover:text-[#FFBF00] transition">Contact</NavLink>
+                <NavLink to='/about' className="hover:text-[#FFBF00] transition">About</NavLink>
+                <NavLink to='/contact' className="hover:text-[#FFBF00] transition">Contact</NavLink>
 
             </ul>
             <div class="flex items-center gap-4">
@@ -80,10 +80,11 @@ const Navbar = () => {
                 <div className={`${open ? 'flex' : 'hidden'} absolute top-[60px] left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden `}>
                     <NavLink to="/" onClick={() => setOpen(false)}> Home</NavLink>
                     <NavLink to="/Collection" onClick={() => setOpen(false)}> Collections</NavLink>
+                    <NavLink to="/about" onClick={() => setOpen(false)}> About</NavLink>
                     {user &&
                         <NavLink to="/Product" onClick={() => setOpen(false)}>My Orders </NavLink>
                     }
-                    <NavLink to="/Contact" onClick={() => setOpen(false)}>Contact</NavLink>
+                    <NavLink to="/contact" onClick={() => setOpen(false)}>Contact</NavLink>
 
                     {!user ? (
                         <button onClick={() => {

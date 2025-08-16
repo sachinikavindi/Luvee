@@ -13,7 +13,6 @@ const Home = () => {
           <Categories/>
           <LatestCollection/>
          <BestSeller/>
-         <NewsletterBox/>
          
       </div>
      

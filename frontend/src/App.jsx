@@ -4,6 +4,8 @@ import Navbar from './components/Navbar'
 import CheckoutNavbar from './components/CheckoutNavbar'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
+import About from './pages/About'
+import Contact from './pages/Contact'
 import Footer from './components/Fotter'
 import { useAppContext } from './context/AppContext'
 import Login from './components/Login'
@@ -32,6 +34,8 @@ const App = () => {
       <div className={isSellerPath ? "" : ""}>
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/contact' element={<Contact />} />
           <Route path='/Collection' element={<Collection />} />
           <Route path='/Collection/:id' element={<Product />} />
           <Route path='/cart' element={<Cart />} />

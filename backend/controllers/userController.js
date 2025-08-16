@@ -56,7 +56,7 @@ const loginUser = async (req, res) => {
             success: false,
             message: error.message
         });
-    }
+     }
 }
 
 //Route for user register
@@ -93,22 +93,22 @@ const registerUser = async (req, res) => {
                 success: false,
                 message: "Please enter a strong Password (minimum 8 characters)"
             });
-        }
+    }
 
-        //hashing user password
-        const salt = await bcrypt.genSalt(10)
+    //hashing user password
+    const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
-
+ 
         const newUser = new userModel({
             firstName,
-            lastName,
-            email,
+        lastName,
+        email,
             password: hashedPassword
         });
 
-        const user = await newUser.save()
+    const user = await newUser.save()
 
-        const token = createToken(user._id)
+    const token = createToken(user._id)
 
         res.status(201).json({
             success: true,
@@ -286,7 +286,7 @@ const getUserCart = async (req, res) => {
             cartData: user.cartData || {}
         });
     } catch (error) {
-        console.log(error);
+    console.log(error);
         res.status(500).json({
             success: false,
             message: error.message

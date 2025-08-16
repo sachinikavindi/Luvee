@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import QuickAddModal from "../components/QuickAddModal";
 
 const Collection = () => {
-  const { products, currency } = useContext(ShopContext);
+  const { products, currency, loading, error } = useContext(ShopContext);
   const { search, showSearch } = useContext(AppContext);
   const [showFilter, setShowFilter] = useState(false)
   const [filterProducts, setFilterProducts] = useState([]);
@@ -63,29 +63,27 @@ const Collection = () => {
   }
 
   const sortProduct = () => {
-    let fpCopy = filterProducts.slice();
+    setFilterProducts(prevFilterProducts => {
+      let fpCopy = prevFilterProducts.slice();
 
-    switch (sortType) {
-      case 'low-high':
-        setFilterProducts(fpCopy.sort((a, b) => (a.price - b.price)));
-        break;
+      switch (sortType) {
+        case 'low-high':
+          return fpCopy.sort((a, b) => (a.price - b.price));
 
-      case 'high-low':
-        setFilterProducts(fpCopy.sort((a, b) => (b.price - a.price)));
-        break;
+        case 'high-low':
+          return fpCopy.sort((a, b) => (b.price - a.price));
 
-      default:
-        applyFilter();
-        break;
-
-    }
+        default:
+          return fpCopy;
+      }
+    });
   }
   // Initial load of products
 
-  // Apply filters when category, sizes, or search changes
+  // Apply filters when category, sizes, search, or products change
   useEffect(() => {
     applyFilter();
-  }, [category, sizes, search]);
+  }, [category, sizes, search, products]);
 
   useEffect(() => {
     sortProduct();
@@ -105,6 +103,41 @@ const Collection = () => {
     setSelectedProduct(product);
     setShowQuickAdd(true);
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-950 mx-auto"></div>
+          <p className="mt-4 text-green-950">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 mb-4">
+            <svg className="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Products</h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-green-950 hover:bg-green-800 text-white px-6 py-2 rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='mt-3 flex flex-col sm:flex-row gap-1 sm:gap-10'>
@@ -141,10 +174,10 @@ const Collection = () => {
               <p className='mb-3 text-sm font-medium '>CATEGORIES</p>
               <div className='flex flex-col gap 2 text-sm font-light text-green-950'>
                 <p className='flex gap-2'>
-                  <input className='w-3' type='checkbox' value={'TOP'} onChange={toggleCategory} />TOP
+                  <input className='w-3' type='checkbox' value={'Top'} onChange={toggleCategory} />TOP
                 </p>
                 <p className='flex gap-2'>
-                  <input className='w-3' type='checkbox' value={'DRESSES'} onChange={toggleCategory} />DRESSES
+                  <input className='w-3' type='checkbox' value={'Dresses'} onChange={toggleCategory} />DRESSES
                 </p>
               </div>
             </div>
@@ -161,19 +194,22 @@ const Collection = () => {
               <p className='mb-3 text-sm font-medium '>SIZE</p>
               <div className='flex flex-col gap 2 text-sm font-light text-green-950'>
                 <p className='flex gap-2'>
-                  <input className='w-3' type='checkbox' value={'XS'} onChange={toggleSizes} />XS
-                </p>
-                <p className='flex gap-2'>
-                  <input className='w-3' type='checkbox' value={'S'} onChange={toggleSizes} />S
-                </p>
-                <p className='flex gap-2'>
-                  <input className='w-3' type='checkbox' value={'M'} onChange={toggleSizes} />M
-                </p>
-                <p className='flex gap-2'>
                   <input className='w-3' type='checkbox' value={'L'} onChange={toggleSizes} />L
                 </p>
                 <p className='flex gap-2'>
                   <input className='w-3' type='checkbox' value={'XL'} onChange={toggleSizes} />XL
+                </p>
+                <p className='flex gap-2'>
+                  <input className='w-3' type='checkbox' value={'2XL'} onChange={toggleSizes} />2XL
+                </p>
+                <p className='flex gap-2'>
+                  <input className='w-3' type='checkbox' value={'3XL'} onChange={toggleSizes} />3XL
+                </p>
+                <p className='flex gap-2'>
+                  <input className='w-3' type='checkbox' value={'4XL'} onChange={toggleSizes} />4XL
+                </p>
+                <p className='flex gap-2'>
+                  <input className='w-3' type='checkbox' value={'5XL'} onChange={toggleSizes} />5XL
                 </p>
 
               </div>
