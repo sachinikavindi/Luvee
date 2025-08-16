@@ -72,31 +72,23 @@ function Add() {
         throw new Error('Please select at least one image')
       }
 
-      // Prepare product data for MongoDB
-      const productData = {
-        name: formData.name,
-        description: formData.description,
-        price: parseFloat(formData.price),
-        category: formData.category,
-        sizes: formData.sizes,
-        bestSeller: formData.bestSeller,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-
       // Create FormData for image uploads
       const formDataToSend = new FormData()
       
-      // Add product data
-      formDataToSend.append('productData', JSON.stringify(productData))
+      // Add product data fields directly (matching backend expectations)
+      formDataToSend.append('name', formData.name)
+      formDataToSend.append('description', formData.description)
+      formDataToSend.append('price', formData.price)
+      formDataToSend.append('category', formData.category)
+      formDataToSend.append('sizes', JSON.stringify(formData.sizes))
+      formDataToSend.append('bestseller', formData.bestSeller)
       
-      // Add images
+      // Add images with correct field names
       validImages.forEach((image, index) => {
-        formDataToSend.append('image1', image)
+        if (index === 0) formDataToSend.append('image1', image)
         if (index === 1) formDataToSend.append('image2', image)
         if (index === 2) formDataToSend.append('image3', image)
         if (index === 3) formDataToSend.append('image4', image)
-        if (index === 4) formDataToSend.append('image5', image)
       })
 
       // Get authentication token
@@ -106,7 +98,14 @@ function Add() {
       }
 
       console.log('Sending request to:', `${BACKEND_URL}/api/products/add`)
-      console.log('Product data:', productData)
+      console.log('Form data fields:', {
+        name: formData.name,
+        description: formData.description,
+        price: formData.price,
+        category: formData.category,
+        sizes: formData.sizes,
+        bestseller: formData.bestSeller
+      })
       console.log('Images count:', validImages.length)
 
       // Make API call to backend

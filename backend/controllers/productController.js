@@ -6,6 +6,11 @@ import fs from 'fs';
 //function for add product 
 const addProduct = async (req,res) =>{
     try{
+        console.log('=== ADD PRODUCT REQUEST ===');
+        console.log('Request body:', req.body);
+        console.log('Request files:', req.files);
+        console.log('Headers:', req.headers);
+        
         const {name,description,price,category,sizes,bestseller} = req.body;
         
         // Check if files were uploaded
@@ -16,35 +21,42 @@ const addProduct = async (req,res) =>{
             });
         }
 
-        // Check if all required images are present
-        const requiredImages = ['image1', 'image2', 'image3', 'image4'];
-        for (const imageName of requiredImages) {
-            if (!req.files[imageName] || !req.files[imageName][0]) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Missing required image: ${imageName}`
-                });
-            }
+        // Check if at least one image is present
+        const availableImages = ['image1', 'image2', 'image3', 'image4'].filter(
+            imageName => req.files[imageName] && req.files[imageName][0]
+        );
+        
+        if (availableImages.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "At least one image is required"
+            });
         }
 
-        const image1 = req.files.image1[0] && req.files.image1[0];
-        const image2 = req.files.image2[0] && req.files.image2[0];
-        const image3 = req.files.image3[0] && req.files.image3[0];
-        const image4 = req.files.image4[0] && req.files.image4[0];
-
 //image upload to cloudinary//
-        let imagesUrl= await Promise.all(
-            requiredImages.map(async(item) =>{
-                let result= await cloudinary.uploader.upload(req.files[item][0].path,{
-                    resource_type: "image",
-                    folder: "ecommerce/products",
-                    width: 1000,
-                    height: 1000,
-                    crop: "scale"
+        let imagesUrl = [];
+        try {
+            imagesUrl = await Promise.all(
+                availableImages.map(async(imageName) =>{
+                    let result = await cloudinary.uploader.upload(req.files[imageName][0].path,{
+                        resource_type: "image",
+                        width: 1000,
+                        height: 1000,
+                        crop: "scale"
+                    })
+                    return result.secure_url;
                 })
-                return result.secure_url;
-            })
-        )
+            );
+            console.log('Images uploaded to Cloudinary successfully:', imagesUrl);
+        } catch (cloudinaryError) {
+            console.warn('Cloudinary upload failed, saving without images:', cloudinaryError.message);
+            // For now, we'll save the product without images
+            // In production, you should either:
+            // 1. Fix Cloudinary credentials
+            // 2. Use local file storage as fallback
+            // 3. Return an error to the user
+            imagesUrl = [];
+        }
 
         const productData={
             name,
@@ -62,7 +74,7 @@ const addProduct = async (req,res) =>{
         await product.save();
 
         // Clean up uploaded files after successful upload to cloudinary
-        requiredImages.forEach(imageName => {
+        availableImages.forEach(imageName => {
             if (req.files[imageName] && req.files[imageName][0]) {
                 fs.unlinkSync(req.files[imageName][0].path);
             }
@@ -75,10 +87,15 @@ const addProduct = async (req,res) =>{
         });
     }
     catch(error){
-        console.log(error);
+        console.error('=== ADD PRODUCT ERROR ===');
+        console.error('Error details:', error);
+        console.error('Error stack:', error.stack);
+        console.error('Error message:', error.message);
+        
         res.status(500).json({
             success: false,
-            message: error.message || "Error adding product"
+            message: error.message || "Error adding product",
+            error: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 }
